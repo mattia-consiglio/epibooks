@@ -13,7 +13,7 @@ function Book(props) {
 				<Card.Text>Category: {category.charAt().toUpperCase() + category.slice(1)}</Card.Text>
 				<Card.Text>ASIN: {asin}</Card.Text>
 				<Button variant='primary'>
-					<i class='bi bi-cart'></i> Add to cart
+					<i className='bi bi-cart'></i> Add to cart
 				</Button>
 			</Card.Body>
 		</Card>

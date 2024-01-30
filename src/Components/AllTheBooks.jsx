@@ -10,34 +10,72 @@ import historyBooks from '../data/history.json'
 import horrorBooks from '../data/horror.json'
 import romanceBooks from '../data/romance.json'
 import scifiBooks from '../data/scifi.json'
+import MyPagination from './MyPagination'
 
 export class AllTheBooks extends Component {
+	// constructor(props) {
+	// 	super(props)
+
+	// 	// console.log(this.setPageCount())
+	// }
 	state = {
 		currentBooksList: fantasyBooks,
+		currentPage: 1,
+		booksPerPage: 12,
+		pageCount: 1,
+	}
+
+	componentDidMount() {
+		// this.setState({ pageCount: this.getPageCount() })
+		this.setPageCount(this.getPageCount())
+	}
+
+	setPageCount = pageCount => {
+		this.setState({
+			pageCount,
+		})
+	}
+
+	setCurrentPage = currentPage => {
+		currentPage = Math.max(Math.min(currentPage, this.state.pageCount), 1)
+		this.setState({
+			currentPage,
+		})
+	}
+
+	getPageCount(totalItems) {
+		const totalBooks = totalItems || this.state.currentBooksList.length
+		return Math.ceil(totalBooks / this.state.booksPerPage)
 	}
 
 	changeGenre = e => {
 		const selectedGenre = e.target.value
+		const newBooksList = []
 		switch (selectedGenre) {
 			case 'fantasy':
-				this.setState({ currentBooksList: fantasyBooks })
+				newBooksList.push(...fantasyBooks)
 				break
 			case 'history':
-				this.setState({ currentBooksList: historyBooks })
+				newBooksList.push(...historyBooks)
 				break
 			case 'horror':
-				this.setState({ currentBooksList: horrorBooks })
+				newBooksList.push(...horrorBooks)
 				break
 			case 'romance':
-				this.setState({ currentBooksList: romanceBooks })
+				newBooksList.push(...romanceBooks)
 				break
 			case 'scifi':
-				this.setState({ currentBooksList: scifiBooks })
+				newBooksList.push(...scifiBooks)
 				break
 
 			default:
 				break
 		}
+		this.setState({
+			currentBooksList: newBooksList,
+			currentPage: 1,
+			pageCount: this.getPageCount(newBooksList.length),
+		})
 	}
 
 	render() {
@@ -66,13 +104,27 @@ export class AllTheBooks extends Component {
 					</Col>
 				</Row>
 				<Row className='g-3'>
-					{this.state.currentBooksList.map(book => {
-						return (
-							<Col key={book.asin} xs={12} md={6} lg={4} xl={3}>
-								<Book book={book} />
-							</Col>
+					{this.state.currentBooksList
+						.slice(
+							this.state.currentPage * this.state.booksPerPage - this.state.booksPerPage,
+							this.state.currentPage * this.state.booksPerPage
 						)
-					})}
+						.map(book => {
+							return (
+								<Col key={book.asin} xs={12} md={6} lg={4} xl={3}>
+									<Book book={book} />
+								</Col>
+							)
+						})}
+				</Row>
+				<Row className='mt-4'>
+					<Col className='d-flex justify-content-center'>
+						<MyPagination
+							pageCount={this.state.pageCount}
+							currentPage={this.state.currentPage}
+							setCurrentPage={this.setCurrentPage}
+						/>
+					</Col>
 				</Row>
 			</Container>
 		)
