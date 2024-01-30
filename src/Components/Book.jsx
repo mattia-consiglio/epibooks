@@ -2,7 +2,8 @@ import React from 'react'
 import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
 
-function Book({ img, title, price, asin, category }) {
+function Book(props) {
+	const { img, title, price, asin, category } = props.book
 	return (
 		<Card className='h-100 bg-body-secondary'>
 			<Card.Img variant='top' src={img} alt={title} />

@@ -69,13 +69,7 @@ export class AllTheBooks extends Component {
 					{this.state.currentBooksList.map(book => {
 						return (
 							<Col key={book.asin} xs={12} md={6} lg={4} xl={3}>
-								<Book
-									img={book.img}
-									title={book.title}
-									price={book.price}
-									asin={book.asin}
-									category={book.category}
-								/>
+								<Book book={book} />
 							</Col>
 						)
 					})}
