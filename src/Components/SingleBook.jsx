@@ -1,12 +1,10 @@
 import React, { Component } from 'react'
 import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
-import { getMostRecurrentColor } from '../tools'
 import { IoCartOutline, IoHeartOutline, IoHeart } from 'react-icons/io5'
 
 class SingleBook extends Component {
 	state = {
-		bgColor: 'transparent',
 		selected: false,
 	}
 
@@ -14,21 +12,6 @@ class SingleBook extends Component {
 		super(props)
 		// Creazione della reference
 		this.imageRef = React.createRef()
-	}
-
-	setBgColor = color => {
-		this.setState({
-			bgColor: color,
-		})
-	}
-
-	changeBgColor = () => {
-		const img = this.imageRef.current
-		// console.log(img)
-		if (img !== null) {
-			const mostRecurrentColor = getMostRecurrentColor(this.imageRef.current)
-			this.setBgColor(mostRecurrentColor)
-		}
 	}
 
 	toggleSelected = () => {
@@ -54,9 +37,7 @@ class SingleBook extends Component {
 						src={img}
 						alt={title}
 						className='card-img-fixed-height p-2'
-						style={{ backgroundColor: this.props.bgColor }}
 						ref={this.imageRef}
-						// onLoad={this.changeBgColor()}
 						crossOrigin='anonymous'
 					/>
 				</div>
