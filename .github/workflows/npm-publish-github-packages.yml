@@ -14,8 +14,8 @@ jobs:
         with:
           node-version: 20
       - name: Set git user name
-        run: git config --global user.name "github-actions[bot]"
+        run: git config --global user.name "mattia-consiglio"
       - name: Set git user email
-        run: git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        run: git config --global user.email "mattiaconsiglio96@gmail.com"
       - run: npm ci
       - run: npm run deploy
