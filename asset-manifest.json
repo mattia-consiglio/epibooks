@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/epibooks/static/css/main.1d2570b0.css",
+    "main.js": "/epibooks/static/js/main.cefab22f.js",
+    "index.html": "/epibooks/index.html",
+    "main.1d2570b0.css.map": "/epibooks/static/css/main.1d2570b0.css.map",
+    "main.cefab22f.js.map": "/epibooks/static/js/main.cefab22f.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.1d2570b0.css",
+    "static/js/main.cefab22f.js"
+  ]
+}
