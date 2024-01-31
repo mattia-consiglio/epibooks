@@ -4,8 +4,9 @@ import Alert from 'react-bootstrap/Alert'
 import Form from 'react-bootstrap/Form'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import Book from './Book'
+import SingleBook from './SingleBook'
 import MyPagination from './MyPagination'
+import { IoSearch } from 'react-icons/io5'
 
 import fantasyBooks from '../data/fantasy.json'
 import historyBooks from '../data/history.json'
@@ -21,12 +22,15 @@ const bookGenres = {
 	scifi: scifiBooks,
 }
 
-export class AllTheBooks extends Component {
+class AllTheBooks extends Component {
 	state = {
 		currentBooksList: fantasyBooks,
+		filterdBooksList: fantasyBooks,
 		currentPage: 1,
 		booksPerPage: 12,
 		pageCount: 1,
+		search: '',
+		selectedBooks: [],
 	}
 
 	componentDidMount() {
@@ -34,14 +38,20 @@ export class AllTheBooks extends Component {
 	}
 
 	componentDidUpdate(prevProps, prevState) {
-		if (prevState.currentBooksList !== this.state.currentBooksList) {
+		if (prevState.filterdBooksList !== this.state.filterdBooksList) {
 			this.setPageCount()
+		}
+		if (
+			prevState.search !== this.state.search ||
+			prevState.currentBooksList !== this.state.currentBooksList
+		) {
+			this.filterBooks()
 		}
 	}
 
 	setPageCount() {
 		this.setState(prevState => {
-			const totalBooks = this.state.currentBooksList.length
+			const totalBooks = this.state.filterdBooksList.length
 			const pageCount = Math.ceil(totalBooks / this.state.booksPerPage)
 
 			return {
@@ -70,15 +80,53 @@ export class AllTheBooks extends Component {
 		})
 	}
 
+	filterBooks() {
+		const search = this.state.search.toLowerCase()
+		const books = this.state.currentBooksList
+		let filteredBooks = []
+		if (search !== '') {
+			filteredBooks = books.filter(book => {
+				const bookTitle = book.title.toLowerCase().trim()
+				const bookAsin = book.asin.toLowerCase().trim()
+
+				return bookTitle.includes(search) || bookAsin.includes(search)
+			})
+		} else {
+			filteredBooks = books
+		}
+		this.setState(prevState => {
+			return {
+				filterdBooksList: filteredBooks,
+				currentPage: 1,
+			}
+		})
+	}
+
 	renderBooks() {
-		const { currentBooksList, currentPage, booksPerPage } = this.state
+		const { filterdBooksList, currentPage, booksPerPage } = this.state
 		const startIndex = currentPage * booksPerPage - booksPerPage
 		const endIndex = startIndex + booksPerPage
-		return currentBooksList.slice(startIndex, endIndex).map(book => (
+		if (filterdBooksList.length === 0) {
+			return <Alert variant='info'>No Books find</Alert>
+		}
+		return filterdBooksList.slice(startIndex, endIndex).map(book => (
 			<Col key={book.asin} xs={12} md={6} lg={4} xl={3}>
-				<Book book={book} />
+				<SingleBook book={book} />
 			</Col>
 		))
+	}
+	renderPagination() {
+		return (
+			<Row className='mt-4'>
+				<Col className='d-flex justify-content-center'>
+					<MyPagination
+						pageCount={this.state.pageCount}
+						currentPage={this.state.currentPage}
+						setCurrentPage={this.setCurrentPage}
+					/>
+				</Col>
+			</Row>
+		)
 	}
 
 	render() {
@@ -106,25 +154,24 @@ export class AllTheBooks extends Component {
 						</div>
 					</Col>
 				</Row>
-				<Row className='mt-4'>
-					<Col className='d-flex justify-content-center'>
-						<MyPagination
-							pageCount={this.state.pageCount}
-							currentPage={this.state.currentPage}
-							setCurrentPage={this.setCurrentPage}
+				<Row>
+					<Col className='search-bar'>
+						<IoSearch />
+						<Form.Control
+							type='search'
+							placeholder='Search for a book'
+							value={this.state.search}
+							onInput={e => {
+								this.setState(prevState => {
+									return { search: e.target.value }
+								})
+							}}
 						/>
 					</Col>
 				</Row>
+				{this.renderPagination()}
 				<Row className='g-3'>{this.renderBooks()}</Row>
-				<Row className='mt-4'>
-					<Col className='d-flex justify-content-center'>
-						<MyPagination
-							pageCount={this.state.pageCount}
-							currentPage={this.state.currentPage}
-							setCurrentPage={this.setCurrentPage}
-						/>
-					</Col>
-				</Row>
+				{this.renderPagination()}
 			</Container>
 		)
 	}
