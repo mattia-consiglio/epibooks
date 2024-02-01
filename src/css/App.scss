@@ -53,3 +53,52 @@
 		padding-left: 38px;
 	}
 }
+
+.rating {
+	display: flex;
+
+	&.rating-can-change {
+		font-size: 2em;
+		.rating-label {
+			cursor: pointer;
+		}
+	}
+
+	.rating-label {
+		color: orange;
+		padding: 0 0.25em;
+		&:first-of-type {
+			padding-left: 0;
+		}
+		&:last-of-type {
+			padding-right: 0;
+		}
+	}
+
+	.rating-input {
+		display: none;
+	}
+}
+
+.review-container {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	$button-size: 42px;
+	margin-bottom: 0.5rem;
+
+	.review-body {
+		width: calc(100% - $button-size);
+		.text-wrap {
+			overflow-wrap: break-word;
+		}
+	}
+	button {
+		width: $button-size;
+		height: $button-size;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+}

@@ -50,4 +50,62 @@
 }
 .search-bar input {
   padding-left: 38px;
+}
+
+.rating {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+.rating.rating-can-change {
+  font-size: 2em;
+}
+.rating.rating-can-change .rating-label {
+  cursor: pointer;
+}
+.rating .rating-label {
+  color: orange;
+  padding: 0 0.25em;
+}
+.rating .rating-label:first-of-type {
+  padding-left: 0;
+}
+.rating .rating-label:last-of-type {
+  padding-right: 0;
+}
+.rating .rating-input {
+  display: none;
+}
+
+.review-container {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+.review-container .review-body {
+  width: calc(100% - 42px);
+}
+.review-container .review-body .text-wrap {
+  overflow-wrap: break-word;
+}
+.review-container button {
+  width: 42px;
+  height: 42px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
 }/*# sourceMappingURL=App.css.map */

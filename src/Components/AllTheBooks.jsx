@@ -6,6 +6,7 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import SingleBook from './SingleBook'
 import MyPagination from './MyPagination'
+import ReviewsModal from './ReviewsModal'
 import { IoSearch } from 'react-icons/io5'
 
 import fantasyBooks from '../data/fantasy.json'
@@ -14,36 +15,84 @@ import horrorBooks from '../data/horror.json'
 import romanceBooks from '../data/romance.json'
 import scifiBooks from '../data/scifi.json'
 
-const bookGenres = {
-	fantasy: fantasyBooks,
-	history: historyBooks,
-	horror: horrorBooks,
-	romance: romanceBooks,
-	scifi: scifiBooks,
-}
-
 class AllTheBooks extends Component {
+	bookGenres = {
+		// all: this.mergeBooks(),
+		fantasy: fantasyBooks,
+		history: historyBooks,
+		horror: horrorBooks,
+		romance: romanceBooks,
+		scifi: scifiBooks,
+	}
+
+	mergeBooks() {
+		const books = []
+		for (let genre in this.bookGenres) {
+			if (genre === 'all') {
+				continue
+			}
+			const genreBooks = this.bookGenres[genre]
+			if (genreBooks.length > 0) {
+				genreBooks.forEach(book => {
+					const index = books.length ? books.findIndex(b => b.asin === book.asin) : -1
+					if (index === -1) {
+						books.push(book)
+					} else {
+						const categories = books[index].category.split(', ')
+						const newCategory = book.category.charAt().toUpperCase() + book.category.slice(1)
+						if (!categories.includes(newCategory)) {
+							categories.push(newCategory)
+							books[index].category = categories.join(', ')
+						}
+					}
+				})
+			}
+		}
+		return books
+	}
+
 	state = {
-		currentBooksList: fantasyBooks,
-		filterdBooksList: fantasyBooks,
+		currentBooksList: [],
+		filterdBooksList: [],
 		currentPage: 1,
 		booksPerPage: 12,
 		pageCount: 1,
 		search: '',
-		selectedBooks: [],
+		selectedBooks: new Set(),
+		modal: { show: false, content: {} },
 	}
 
 	componentDidMount() {
+		this.bookGenres.all = this.mergeBooks()
+		this.setState(prevState => {
+			return {
+				currentBooksList: this.bookGenres.all,
+				filterBooks: this.bookGenres.all,
+			}
+		})
 		this.setPageCount()
+		const localStorageBooks = localStorage.getItem('selectedBooks')
+		if (localStorageBooks) {
+			JSON.parse(localStorageBooks).forEach(book => {
+				this.state.selectedBooks.add(book)
+			})
+			this.setState(prevState => {
+				return { selectedBooks: this.state.selectedBooks }
+			})
+		}
 	}
 
 	componentDidUpdate(prevProps, prevState) {
-		if (prevState.filterdBooksList !== this.state.filterdBooksList) {
+		if (
+			prevState.filterdBooksList !== this.state.filterdBooksList ||
+			prevState.booksPerPage !== this.state.booksPerPage
+		) {
 			this.setPageCount()
 		}
 		if (
 			prevState.search !== this.state.search ||
-			prevState.currentBooksList !== this.state.currentBooksList
+			prevState.currentBooksList !== this.state.currentBooksList ||
+			prevState.booksPerPage !== this.state.booksPerPage
 		) {
 			this.filterBooks()
 		}
@@ -74,14 +123,14 @@ class AllTheBooks extends Component {
 		this.setState(prevState => {
 			const selectedGenre = e.target.value
 			return {
-				currentBooksList: bookGenres[selectedGenre] || [],
+				currentBooksList: this.bookGenres[selectedGenre] || [],
 				currentPage: 1,
 			}
 		})
 	}
 
 	filterBooks() {
-		const search = this.state.search.toLowerCase()
+		const search = this.state.search.toLowerCase().trim()
 		const books = this.state.currentBooksList
 		let filteredBooks = []
 		if (search !== '') {
@@ -102,16 +151,56 @@ class AllTheBooks extends Component {
 		})
 	}
 
+	setShowModal(show) {
+		this.setState(prevState => {
+			return {
+				modal: {
+					...prevState.modal,
+					show,
+				},
+			}
+		})
+	}
+
+	setModalContent(content) {
+		this.setState(prevState => {
+			return {
+				modal: {
+					...prevState.modal,
+					content,
+				},
+			}
+		})
+	}
+
+	constructor(props) {
+		super(props)
+		this.setShowModal = this.setShowModal.bind(this)
+		this.setModalContent = this.setModalContent.bind(this)
+	}
+
 	renderBooks() {
 		const { filterdBooksList, currentPage, booksPerPage } = this.state
 		const startIndex = currentPage * booksPerPage - booksPerPage
 		const endIndex = startIndex + booksPerPage
 		if (filterdBooksList.length === 0) {
-			return <Alert variant='info'>No Books find</Alert>
+			return (
+				<Col>
+					<Alert variant='warning'>
+						No books found for: <b>{this.state.search}</b>
+					</Alert>
+				</Col>
+			)
 		}
 		return filterdBooksList.slice(startIndex, endIndex).map(book => (
 			<Col key={book.asin} xs={12} md={6} lg={4} xl={3}>
-				<SingleBook book={book} />
+				<SingleBook
+					book={book}
+					selectedBooks={this.state.selectedBooks}
+					setSelectedBooks={this.setSelectedBooks}
+					setShowModal={this.setShowModal}
+					setModalContent={this.setModalContent}
+				/>
 			</Col>
 		))
 	}
@@ -129,50 +218,77 @@ class AllTheBooks extends Component {
 		)
 	}
 
+	setSelectedBooks = selectedBooks => {
+		this.setState({
+			selectedBooks,
+		})
+	}
+
 	render() {
 		return (
-			<Container className='my-4'>
-				<Row>
-					<Col xs={12}>
-						<Alert variant='info'>Welcome on the EpiBooks website!</Alert>
-						<div className='d-flex column-gap-3 mb-4 justify-content-between align-items-center flex-wrap'>
-							<h1>Books</h1>
-							<div className='d-flex align-items-center'>
-								<p className='mb-1 me-2'>Genre:</p>
-								<Form.Select
-									aria-label='Select genre'
-									onChange={e => this.changeGenre(e)}
-									defaultValue='fantasy'
-								>
-									<option value='fantasy'>Fantasy</option>
-									<option value='history'>History</option>
-									<option value='horror'>Horror</option>
-									<option value='romance'>Romance</option>
-									<option value='scifi'>Sci-Fi</option>
-								</Form.Select>
+			<>
+				<Container className='my-4'>
+					<Row>
+						<Col xs={12}>
+							<Alert variant='info'>Welcome on the EpiBooks website!</Alert>
+							<div className='d-flex column-gap-3 mb-4 justify-content-between align-items-center flex-wrap'>
+								<h1>Books</h1>
+								<div className='d-flex align-items-center column-gap-3'>
+									<div className='d-flex align-items-center'>
+										<p className='mb-1 me-2'>Genre:</p>
+										<Form.Select
+											aria-label='Select genre'
+											onChange={e => this.changeGenre(e)}
+											defaultValue='all'
+										>
+											<option value='all'>All</option>
+											<option value='fantasy'>Fantasy</option>
+											<option value='history'>History</option>
+											<option value='horror'>Horror</option>
+											<option value='romance'>Romance</option>
+											<option value='scifi'>Sci-Fi</option>
+										</Form.Select>
+									</div>
+									<div className='d-flex align-items-center'>
+										<p className='mb-1 me-2'>Books per page:</p>
+										<Form.Control
+											type='number'
+											min='4'
+											max='100'
+											value={this.state.booksPerPage}
+											step={4}
+											onChange={e => this.setState(prevState => ({ booksPerPage: e.target.value }))}
+										/>
+									</div>
+								</div>
 							</div>
-						</div>
-					</Col>
-				</Row>
-				<Row>
-					<Col className='search-bar'>
-						<IoSearch />
-						<Form.Control
-							type='search'
-							placeholder='Search for a book'
-							value={this.state.search}
-							onInput={e => {
-								this.setState(prevState => {
-									return { search: e.target.value }
-								})
-							}}
-						/>
-					</Col>
-				</Row>
-				{this.renderPagination()}
-				<Row className='g-3'>{this.renderBooks()}</Row>
-				{this.renderPagination()}
-			</Container>
+						</Col>
+					</Row>
+					<Row>
+						<Col className='search-bar'>
+							<IoSearch />
+							<Form.Control
+								type='search'
+								placeholder='Search for a book'
+								value={this.state.search}
+								onInput={e => {
+									this.setState(prevState => {
+										return { search: e.target.value }
+									})
+								}}
+							/>
+						</Col>
+					</Row>
+					{this.renderPagination()}
+					<Row className='g-3'>{this.renderBooks()}</Row>
+					{this.renderPagination()}
+				</Container>
+				<ReviewsModal
+					setShowModal={this.setShowModal}
+					show={this.state.modal.show}
+					content={this.state.modal.content}
+				/>
+			</>
 		)
 	}
 }
