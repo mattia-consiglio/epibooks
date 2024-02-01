@@ -5,6 +5,8 @@ import MyNav from './Components/MyNav'
 import MyFooter from './Components/MyFooter'
 import AllTheBooks from './Components/AllTheBooks'
 
+import { Analytics } from '@vercel/analytics/react'
+
 function App() {
 	return (
 		<>
@@ -17,6 +19,7 @@ function App() {
 			<footer>
 				<MyFooter />
 			</footer>
+			<Analytics />
 		</>
 	)
 }
