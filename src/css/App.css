@@ -45,6 +45,9 @@
           filter: blur(10px);
   opacity: 0.5;
 }
+.img-card-wrapper.loading::before {
+  opacity: 0;
+}
 .img-card-wrapper .card-img-fixed-height {
   width: auto;
   max-height: 100%;
