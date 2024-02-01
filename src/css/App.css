@@ -15,6 +15,20 @@
   position: relative;
   --img: "";
 }
+.img-card-wrapper .img-card-placeholder {
+  height: 100%;
+  z-index: 100;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  -webkit-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+.img-card-wrapper .img-card-placeholder span {
+  display: block;
+  height: 100%;
+}
 .img-card-wrapper::before {
   content: "";
   position: absolute;
@@ -36,6 +50,8 @@
   max-height: 100%;
   max-width: 100%;
   z-index: 2;
+  -webkit-transition: all 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .search-bar {

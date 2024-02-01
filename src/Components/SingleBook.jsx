@@ -2,10 +2,12 @@ import React, { Component } from 'react'
 import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
 import { IoCartOutline, IoHeartOutline, IoHeart, IoStarOutline } from 'react-icons/io5'
+import Placeholder from 'react-bootstrap/Placeholder'
 
 class SingleBook extends Component {
 	state = {
 		selected: false,
+		isLoading: true,
 	}
 
 	constructor(props) {
@@ -43,19 +45,33 @@ class SingleBook extends Component {
 				className={'h-100 bg-body-secondary border-2' + (this.isSelected() ? ' border-danger' : '')}
 			>
 				<div
-					className='img-card-wrapper'
+					className={'img-card-wrapper' + (this.state.isLoading ? ' loading' : '')}
 					onClick={() => {
 						this.toggleSelected()
 					}}
 					style={{ '--img': "url('" + img + "')" }}
 				>
+					<Placeholder
+						as='div'
+						animation='wave'
+						className='img-card-placeholder'
+						style={{
+							opacity: !this.state.isLoading ? 0 : 1,
+							zIndex: !this.state.isLoading ? -1 : 10,
+						}}
+					>
+						<Placeholder xs={12} />
+					</Placeholder>
 					<Card.Img
 						variant='top'
 						src={img}
 						alt={title}
 						className='card-img-fixed-height p-2'
 						ref={this.imageRef}
-						crossOrigin='anonymous'
+						style={{ opacity: this.state.isLoading ? 0 : 1 }}
+						onLoad={() => {
+							this.setState({ isLoading: false })
+						}}
 					/>
 				</div>
 				<Card.Body className='d-flex flex-column'>
