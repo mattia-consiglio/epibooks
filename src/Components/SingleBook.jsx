@@ -16,26 +16,31 @@ class SingleBook extends Component {
 		this.imageRef = React.createRef()
 	}
 
-	componentDidUpdate(prevProps, prevState) {
-		if (this.state.selected !== prevState.selected) {
-			if (this.state.selected) {
-				this.props.selectedBooks.add(this.props.book.asin)
-			} else {
-				this.props.selectedBooks.delete(this.props.book.asin)
-			}
-			this.props.setSelectedBooks(this.props.selectedBooks)
-			localStorage.setItem('selectedBooks', JSON.stringify([...this.props.selectedBooks]))
+	updateSelected(selected = this.state.selected) {
+		if (selected) {
+			this.props.selectedBooks.add(this.props.book.asin)
+		} else {
+			this.props.selectedBooks.delete(this.props.book.asin)
+		}
+		this.props.setSelectedBooks(this.props.selectedBooks)
+		localStorage.setItem('selectedBooks', JSON.stringify([...this.props.selectedBooks]))
+	}
+	componentDidMount() {
+		if (this.props.selectedBooks.has(this.props.book.asin)) {
+			this.setState({ selected: true })
 		}
 	}
 
 	toggleSelected = () => {
 		this.setState(prevState => {
-			return { selected: !prevState.selected }
+			const selected = !prevState.selected
+			this.updateSelected(selected)
+			return { selected }
 		})
 	}
 
 	isSelected = () => {
-		return this.state.selected || this.props.selectedBooks.has(this.props.book.asin)
+		return this.state.selected
 	}
 	render() {
 		const { img, title, price, asin, category } = this.props.book

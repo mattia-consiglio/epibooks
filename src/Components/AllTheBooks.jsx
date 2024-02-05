@@ -257,7 +257,7 @@ class AllTheBooks extends Component {
 											max='100'
 											value={this.state.booksPerPage}
 											step={4}
-											onChange={e => this.setState(prevState => ({ booksPerPage: e.target.value }))}
+											onChange={e => this.setState(() => ({ booksPerPage: e.target.value }))}
 										/>
 									</div>
 								</div>
@@ -279,12 +279,13 @@ class AllTheBooks extends Component {
 							/>
 						</Col>
 					</Row>
-					{this.renderPagination()}
 					<Row>
 						<Col xs={12} md={6} lg={8}>
+							{this.renderPagination()}
 							<Row className='g-3'>{this.renderBooks()}</Row>
+							{this.renderPagination()}
 						</Col>
-						<Col xs={12} md={6} lg={4}>
+						<Col xs={12} md={6} lg={4} className='mt-4'>
 							<Reviews
 								setShowModal={this.setShowModal}
 								show={this.state.modal.show}
@@ -292,7 +293,6 @@ class AllTheBooks extends Component {
 							/>
 						</Col>
 					</Row>
-					{this.renderPagination()}
 				</Container>
 			</>
 		)
