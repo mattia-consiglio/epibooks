@@ -8,7 +8,7 @@ import Review from './Review'
 import Loading from './Loading'
 import Alert from 'react-bootstrap/Alert'
 
-export class ReviewsModal extends Component {
+export class Reviews extends Component {
 	handleClose = () => {
 		this.props.setShowModal(false)
 	}
@@ -36,9 +36,11 @@ export class ReviewsModal extends Component {
 	}
 
 	componentDidUpdate(prevProps, prevState) {
-		if (this.props.show !== prevProps.show && this.props.show) {
-			this.getReviews()
-			this.setState({ isLoading: true, isError: false, comment: '', rating: 0 })
+		if (this.props.content !== null) {
+			if (prevProps.content === null || this.props.content.asin !== prevProps.content.asin) {
+				this.setState({ isLoading: true, isError: false, comment: '', rating: 0 })
+				this.getReviews()
+			}
 		}
 	}
 
@@ -72,7 +74,7 @@ export class ReviewsModal extends Component {
 			})
 	}
 
-	getReviews = async () => {
+	getReviews = () => {
 		this.api({
 			method: 'GET',
 			id: this.props.content.asin,
@@ -87,21 +89,14 @@ export class ReviewsModal extends Component {
 	}
 
 	render() {
-		const { title } = this.props.content
 		return (
-			<div className='modal show' style={{ display: 'block', position: 'initial' }}>
-				<Modal
-					show={this.props.show}
-					onHide={() => {
-						this.handleClose()
-					}}
-				>
-					<Modal.Header closeButton>
-						<Modal.Title>Reviews</Modal.Title>
-					</Modal.Header>
-					<Modal.Body>
+			<>
+				{!this.props.content ? (
+					''
+				) : (
+					<>
 						<h5 className='mb-3'>
-							Reviews for: <b>{title}</b>
+							Reviews for: <b>{this.props.content.title}</b>
 						</h5>
 						<div>
 							{this.state.isLoading === true && <Loading />}
@@ -160,21 +155,11 @@ export class ReviewsModal extends Component {
 						>
 							Add rewiew
 						</Button>
-					</Modal.Body>
-					<Modal.Footer>
-						<Button
-							variant='secondary'
-							onClick={() => {
-								this.handleClose()
-							}}
-						>
-							Close
-						</Button>
-					</Modal.Footer>
-				</Modal>
-			</div>
+					</>
+				)}
+			</>
 		)
 	}
 }
 
-export default ReviewsModal
+export default Reviews

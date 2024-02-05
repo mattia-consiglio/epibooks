@@ -6,7 +6,7 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import SingleBook from './SingleBook'
 import MyPagination from './MyPagination'
-import ReviewsModal from './ReviewsModal'
+import Reviews from './Reviews'
 import { IoSearch } from 'react-icons/io5'
 
 import fantasyBooks from '../data/fantasy.json'
@@ -59,7 +59,7 @@ class AllTheBooks extends Component {
 		pageCount: 1,
 		search: '',
 		selectedBooks: new Set(),
-		modal: { show: false, content: {} },
+		modal: { show: false, content: null },
 	}
 
 	componentDidMount() {
@@ -193,7 +193,7 @@ class AllTheBooks extends Component {
 			)
 		}
 		return filterdBooksList.slice(startIndex, endIndex).map(book => (
-			<Col key={book.asin} xs={12} md={6} lg={4} xl={3}>
+			<Col key={book.asin} xs={12} md={12} lg={6} xl={4}>
 				<SingleBook
 					book={book}
 					selectedBooks={this.state.selectedBooks}
@@ -280,14 +280,20 @@ class AllTheBooks extends Component {
 						</Col>
 					</Row>
 					{this.renderPagination()}
-					<Row className='g-3'>{this.renderBooks()}</Row>
+					<Row>
+						<Col xs={12} md={6} lg={8}>
+							<Row className='g-3'>{this.renderBooks()}</Row>
+						</Col>
+						<Col xs={12} md={6} lg={4}>
+							<Reviews
+								setShowModal={this.setShowModal}
+								show={this.state.modal.show}
+								content={this.state.modal.content}
+							/>
+						</Col>
+					</Row>
 					{this.renderPagination()}
 				</Container>
-				<ReviewsModal
-					setShowModal={this.setShowModal}
-					show={this.state.modal.show}
-					content={this.state.modal.content}
-				/>
 			</>
 		)
 	}
