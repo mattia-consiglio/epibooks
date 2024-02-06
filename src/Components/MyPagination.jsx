@@ -1,7 +1,7 @@
 import React from 'react'
 import Pagination from 'react-bootstrap/Pagination'
 
-function MyPagination({ currentPage, pageCount, setCurrentPage }) {
+function MyPagination({ currentPage, pageCount, updateCurrentPage }) {
 	if (pageCount === 0) {
 		return <></>
 	}
@@ -18,15 +18,15 @@ function MyPagination({ currentPage, pageCount, setCurrentPage }) {
 
 	return (
 		<Pagination>
-			<Pagination.First onClick={() => setCurrentPage(1)} disabled={currentPage === 1} />
+			<Pagination.First onClick={() => updateCurrentPage(1)} disabled={currentPage === 1} />
 			<Pagination.Prev
-				onClick={() => setCurrentPage(currentPage - 1)}
+				onClick={() => updateCurrentPage(currentPage - 1)}
 				disabled={currentPage === 1}
 			/>
 
 			{startPage > 1 && (
 				<>
-					<Pagination.Item onClick={() => setCurrentPage(1)}>1</Pagination.Item>
+					<Pagination.Item onClick={() => updateCurrentPage(1)}>1</Pagination.Item>
 					{startPage > 2 && <Pagination.Ellipsis disabled />}
 				</>
 			)}
@@ -35,7 +35,7 @@ function MyPagination({ currentPage, pageCount, setCurrentPage }) {
 				<Pagination.Item
 					key={startPage + i}
 					active={startPage + i === currentPage}
-					onClick={() => setCurrentPage(startPage + i)}
+					onClick={() => updateCurrentPage(startPage + i)}
 				>
 					{startPage + i}
 				</Pagination.Item>
@@ -44,16 +44,18 @@ function MyPagination({ currentPage, pageCount, setCurrentPage }) {
 			{endPage < pageCount && (
 				<>
 					{endPage < pageCount - 1 && <Pagination.Ellipsis disabled />}
-					<Pagination.Item onClick={() => setCurrentPage(pageCount)}>{pageCount}</Pagination.Item>
+					<Pagination.Item onClick={() => updateCurrentPage(pageCount)}>
+						{pageCount}
+					</Pagination.Item>
 				</>
 			)}
 
 			<Pagination.Next
-				onClick={() => setCurrentPage(currentPage + 1)}
+				onClick={() => updateCurrentPage(currentPage + 1)}
 				disabled={currentPage === pageCount}
 			/>
 			<Pagination.Last
-				onClick={() => setCurrentPage(pageCount)}
+				onClick={() => updateCurrentPage(pageCount)}
 				disabled={currentPage === pageCount}
 			/>
 		</Pagination>

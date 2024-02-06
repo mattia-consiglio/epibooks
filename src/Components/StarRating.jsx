@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { IoStar, IoStarOutline } from 'react-icons/io5'
 
 function StarRating({ rating, canChange, setRating = () => {}, className = '' }) {
-	const [hover, setHover] = useState(false)
 	const [tempRating, SetTempRating] = useState(rating)
 
 	return (

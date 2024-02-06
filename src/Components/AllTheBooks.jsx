@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect } from 'react'
 import Container from 'react-bootstrap/Container'
 import Alert from 'react-bootstrap/Alert'
 import Form from 'react-bootstrap/Form'
@@ -15,9 +15,8 @@ import horrorBooks from '../data/horror.json'
 import romanceBooks from '../data/romance.json'
 import scifiBooks from '../data/scifi.json'
 
-class AllTheBooks extends Component {
-	bookGenres = {
-		// all: this.mergeBooks(),
+const AllTheBooks = () => {
+	const bookGenres = {
 		fantasy: fantasyBooks,
 		history: historyBooks,
 		horror: horrorBooks,
@@ -25,13 +24,22 @@ class AllTheBooks extends Component {
 		scifi: scifiBooks,
 	}
 
-	mergeBooks() {
+	const [currentBooksList, setCurrentBooksList] = useState([])
+	const [filterdBooksList, setFilterdBooksList] = useState([])
+	const [currentPage, setCurrentPage] = useState(1)
+	const [booksPerPage, setBooksPerPage] = useState(12)
+	const [pageCount, setPageCount] = useState(1)
+	const [search, setSearch] = useState('')
+	const [selectedBooks, setSelectedBooks] = useState(new Set())
+	const [reviewBook, setReviewBook] = useState(null)
+
+	const mergeBooks = () => {
 		const books = []
-		for (let genre in this.bookGenres) {
+		for (let genre in bookGenres) {
 			if (genre === 'all') {
 				continue
 			}
-			const genreBooks = this.bookGenres[genre]
+			const genreBooks = bookGenres[genre]
 			if (genreBooks.length > 0) {
 				genreBooks.forEach(book => {
 					const index = books.length ? books.findIndex(b => b.asin === book.asin) : -1
@@ -51,143 +59,73 @@ class AllTheBooks extends Component {
 		return books
 	}
 
-	state = {
-		currentBooksList: [],
-		filterdBooksList: [],
-		currentPage: 1,
-		booksPerPage: 12,
-		pageCount: 1,
-		search: '',
-		selectedBooks: new Set(),
-		modal: { show: false, content: null },
+	const updatePageCount = () => {
+		const totalBooks = filterdBooksList.length
+		const pageCount = Math.ceil(totalBooks / booksPerPage)
+		setPageCount(pageCount)
 	}
 
-	componentDidMount() {
-		this.bookGenres.all = this.mergeBooks()
-		this.setState(prevState => {
-			return {
-				currentBooksList: this.bookGenres.all,
-				filterBooks: this.bookGenres.all,
-			}
-		})
-		this.setPageCount()
-		const localStorageBooks = localStorage.getItem('selectedBooks')
-		if (localStorageBooks) {
-			JSON.parse(localStorageBooks).forEach(book => {
-				this.state.selectedBooks.add(book)
-			})
-			this.setState(prevState => {
-				return { selectedBooks: this.state.selectedBooks }
-			})
-		}
-	}
-
-	componentDidUpdate(prevProps, prevState) {
-		if (
-			prevState.filterdBooksList !== this.state.filterdBooksList ||
-			prevState.booksPerPage !== this.state.booksPerPage
-		) {
-			this.setPageCount()
-		}
-		if (
-			prevState.search !== this.state.search ||
-			prevState.currentBooksList !== this.state.currentBooksList ||
-			prevState.booksPerPage !== this.state.booksPerPage
-		) {
-			this.filterBooks()
-		}
-	}
-
-	setPageCount() {
-		this.setState(prevState => {
-			const totalBooks = this.state.filterdBooksList.length
-			const pageCount = Math.ceil(totalBooks / this.state.booksPerPage)
-
-			return {
-				pageCount,
-			}
-		})
-	}
-
-	setCurrentPage = newPage => {
-		this.setState(prevState => {
-			const { pageCount } = prevState
-			const currentPage = Math.max(Math.min(newPage, pageCount), 1)
-			return {
-				currentPage,
-			}
-		})
-	}
-
-	changeGenre = e => {
-		this.setState(prevState => {
-			const selectedGenre = e.target.value
-			return {
-				currentBooksList: this.bookGenres[selectedGenre] || [],
-				currentPage: 1,
-			}
-		})
-	}
-
-	filterBooks() {
-		const search = this.state.search.toLowerCase().trim()
-		const books = this.state.currentBooksList
+	const filterBooks = () => {
+		const funcSearch = search.toLowerCase().trim()
+		const books = currentBooksList
 		let filteredBooks = []
-		if (search !== '') {
+		if (funcSearch !== '') {
 			filteredBooks = books.filter(book => {
 				const bookTitle = book.title.toLowerCase().trim()
 				const bookAsin = book.asin.toLowerCase().trim()
 
-				return bookTitle.includes(search) || bookAsin.includes(search)
+				return bookTitle.includes(funcSearch) || bookAsin.includes(funcSearch)
 			})
 		} else {
 			filteredBooks = books
 		}
-		this.setState(prevState => {
-			return {
-				filterdBooksList: filteredBooks,
-				currentPage: 1,
-			}
-		})
+		setFilterdBooksList(filteredBooks)
+		setCurrentPage(1)
 	}
 
-	setShowModal(show) {
-		this.setState(prevState => {
-			return {
-				modal: {
-					...prevState.modal,
-					show,
-				},
-			}
-		})
+	const updateCurrentPage = newPage => {
+		const currentPage = Math.max(Math.min(newPage, pageCount), 1)
+		setCurrentPage(currentPage)
 	}
 
-	setModalContent(content) {
-		this.setState(prevState => {
-			return {
-				modal: {
-					...prevState.modal,
-					content,
-				},
-			}
-		})
+	const changeGenre = e => {
+		const selectedGenre = e.target.value
+
+		setCurrentBooksList(bookGenres[selectedGenre] || [])
+		setCurrentPage(1)
 	}
 
-	constructor(props) {
-		super(props)
-		this.setShowModal = this.setShowModal.bind(this)
-		this.setModalContent = this.setModalContent.bind(this)
-	}
+	useEffect(() => {
+		bookGenres.all = mergeBooks()
+		setCurrentBooksList(bookGenres.all)
+		setFilterdBooksList(bookGenres.all)
+		updatePageCount()
 
-	renderBooks() {
-		const { filterdBooksList, currentPage, booksPerPage } = this.state
+		const localStorageBooks = localStorage.getItem('selectedBooks')
+		if (localStorageBooks) {
+			JSON.parse(localStorageBooks).forEach(book => {
+				selectedBooks.add(book)
+			})
+			setSelectedBooks(selectedBooks)
+		}
+	}, [])
+
+	useEffect(() => {
+		updatePageCount()
+	}, [filterdBooksList, booksPerPage])
+
+	useEffect(() => {
+		filterBooks()
+	}, [search, currentBooksList, booksPerPage])
+
+	const renderBooks = () => {
 		const startIndex = currentPage * booksPerPage - booksPerPage
 		const endIndex = startIndex + booksPerPage
 		if (filterdBooksList.length === 0) {
 			return (
 				<Col>
 					<Alert variant='warning'>
-						No books found for: <b>{this.state.search}</b>
+						No books found for: <b>{search}</b>
 					</Alert>
 				</Col>
 			)
@@ -196,107 +134,92 @@ class AllTheBooks extends Component {
 			<Col key={book.asin} xs={12} md={12} lg={6} xl={4}>
 				<SingleBook
 					book={book}
-					selectedBooks={this.state.selectedBooks}
-					setSelectedBooks={this.setSelectedBooks}
-					setShowModal={this.setShowModal}
-					setModalContent={this.setModalContent}
+					selectedBooks={selectedBooks}
+					setSelectedBooks={setSelectedBooks}
+					setReviews={setReviewBook}
 				/>
 			</Col>
 		))
 	}
-	renderPagination() {
+	const renderPagination = () => {
 		return (
 			<Row className='mt-4'>
 				<Col className='d-flex justify-content-center'>
 					<MyPagination
-						pageCount={this.state.pageCount}
-						currentPage={this.state.currentPage}
-						setCurrentPage={this.setCurrentPage}
+						pageCount={pageCount}
+						currentPage={currentPage}
+						updateCurrentPage={updateCurrentPage}
 					/>
 				</Col>
 			</Row>
 		)
 	}
 
-	setSelectedBooks = selectedBooks => {
-		this.setState({
-			selectedBooks,
-		})
-	}
-
-	render() {
-		return (
-			<>
-				<Container className='my-4'>
-					<Row>
-						<Col xs={12}>
-							<Alert variant='info'>Welcome on the EpiBooks website!</Alert>
-							<div className='d-flex column-gap-3 mb-4 justify-content-between align-items-center flex-wrap'>
-								<h1>Books</h1>
-								<div className='d-flex align-items-center column-gap-3'>
-									<div className='d-flex align-items-center'>
-										<p className='mb-1 me-2'>Genre:</p>
-										<Form.Select
-											aria-label='Select genre'
-											onChange={e => this.changeGenre(e)}
-											defaultValue='all'
-										>
-											<option value='all'>All</option>
-											<option value='fantasy'>Fantasy</option>
-											<option value='history'>History</option>
-											<option value='horror'>Horror</option>
-											<option value='romance'>Romance</option>
-											<option value='scifi'>Sci-Fi</option>
-										</Form.Select>
-									</div>
-									<div className='d-flex align-items-center'>
-										<p className='mb-1 me-2'>Books per page:</p>
-										<Form.Control
-											type='number'
-											min='4'
-											max='100'
-											value={this.state.booksPerPage}
-											step={4}
-											onChange={e => this.setState(() => ({ booksPerPage: e.target.value }))}
-										/>
-									</div>
+	return (
+		<>
+			<Container className='my-4'>
+				<Row>
+					<Col xs={12}>
+						<Alert variant='info'>Welcome on the EpiBooks website!</Alert>
+						<div className='d-flex column-gap-3 mb-4 justify-content-between align-items-center flex-wrap'>
+							<h1>Books</h1>
+							<div className='d-flex align-items-center column-gap-3'>
+								<div className='d-flex align-items-center'>
+									<p className='mb-1 me-2'>Genre:</p>
+									<Form.Select
+										aria-label='Select genre'
+										onChange={e => changeGenre(e)}
+										defaultValue='all'
+									>
+										<option value='all'>All</option>
+										<option value='fantasy'>Fantasy</option>
+										<option value='history'>History</option>
+										<option value='horror'>Horror</option>
+										<option value='romance'>Romance</option>
+										<option value='scifi'>Sci-Fi</option>
+									</Form.Select>
+								</div>
+								<div className='d-flex align-items-center'>
+									<p className='mb-1 me-2'>Books per page:</p>
+									<Form.Control
+										type='number'
+										min='4'
+										max='100'
+										value={booksPerPage}
+										step={4}
+										onChange={e => setBooksPerPage(e.target.value)}
+									/>
 								</div>
 							</div>
-						</Col>
-					</Row>
-					<Row>
-						<Col className='search-bar'>
-							<IoSearch />
-							<Form.Control
-								type='search'
-								placeholder='Search for a book'
-								value={this.state.search}
-								onInput={e => {
-									this.setState(prevState => {
-										return { search: e.target.value }
-									})
-								}}
-							/>
-						</Col>
-					</Row>
-					<Row>
-						<Col xs={12} md={6} lg={8}>
-							{this.renderPagination()}
-							<Row className='g-3'>{this.renderBooks()}</Row>
-							{this.renderPagination()}
-						</Col>
-						<Col xs={12} md={6} lg={4} className='mt-4'>
-							<Reviews
-								setShowModal={this.setShowModal}
-								show={this.state.modal.show}
-								content={this.state.modal.content}
-							/>
-						</Col>
-					</Row>
-				</Container>
-			</>
-		)
-	}
+						</div>
+					</Col>
+				</Row>
+				<Row>
+					<Col className='search-bar'>
+						<IoSearch />
+						<Form.Control
+							type='search'
+							placeholder='Search for a book'
+							value={search}
+							onInput={e => {
+								setSearch(e.target.value)
+							}}
+						/>
+					</Col>
+				</Row>
+				<Row>
+					<Col xs={12} md={6} lg={8}>
+						{renderPagination()}
+						<Row className='g-3'>{renderBooks()}</Row>
+						{renderPagination()}
+					</Col>
+					<Col xs={12} md={6} lg={4} className='mt-4'>
+						<Reviews reviewBook={reviewBook} />
+					</Col>
+				</Row>
+			</Container>
+		</>
+	)
 }
 
 export default AllTheBooks

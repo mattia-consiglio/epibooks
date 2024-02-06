@@ -1,6 +1,5 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect } from 'react'
 import Button from 'react-bootstrap/Button'
-import Modal from 'react-bootstrap/Modal'
 import FloatingLabel from 'react-bootstrap/FloatingLabel'
 import StarRating from './StarRating'
 import Form from 'react-bootstrap/Form'
@@ -8,44 +7,16 @@ import Review from './Review'
 import Loading from './Loading'
 import Alert from 'react-bootstrap/Alert'
 
-export class Reviews extends Component {
-	handleClose = () => {
-		this.props.setShowModal(false)
-	}
+export const Reviews = ({ reviewBook }) => {
+	const [reviews, setReviews] = useState([])
+	const [isLoading, setIsLoading] = useState(true)
+	const [isError, setIsError] = useState(false)
+	const [rating, setRating] = useState(0)
+	const [comment, setComment] = useState('')
 
-	initializeState = {
-		reviews: [],
-		isLoading: true,
-		isError: false,
-		rating: 0,
-		comment: '',
-	}
-
-	state = {
-		reviews: [],
-		isLoading: true,
-		isError: false,
-		rating: 0,
-		comment: '',
-	}
-
-	constructor(props) {
-		super(props)
-		this.state = this.initializeState
-		this.api = this.api.bind(this)
-	}
-
-	componentDidUpdate(prevProps, prevState) {
-		if (this.props.content !== null) {
-			if (prevProps.content === null || this.props.content.asin !== prevProps.content.asin) {
-				this.setState({ isLoading: true, isError: false, comment: '', rating: 0 })
-				this.getReviews()
-			}
-		}
-	}
-
-	api({ method, id, callback, body }) {
-		this.setState({ isLoading: true, isError: false })
+	const api = ({ method, id, callback, body }) => {
+		setIsLoading(true)
+		setIsError(false)
 		const options = {
 			method: method,
 			headers: {
@@ -66,100 +37,93 @@ export class Reviews extends Component {
 				}
 			})
 			.then(data => {
-				this.setState({ isLoading: false })
+				setIsLoading(false)
 				return callback(data)
 			})
 			.catch(err => {
-				this.setState({ isLoading: false, isError: true })
+				setIsLoading(false)
+				setIsError(true)
 			})
 	}
 
-	getReviews = () => {
-		this.api({
+	const getReviews = () => {
+		console.log('getReviews')
+		api({
 			method: 'GET',
-			id: this.props.content.asin,
-			callback: data => this.setState({ reviews: data }),
+			id: reviewBook.asin,
+			callback: data => setReviews(data),
 		})
 	}
 
-	setRating = rating => {
-		this.setState(prevState => {
-			return { rating }
-		})
-	}
+	useEffect(() => {
+		if (reviewBook !== null) {
+			setIsLoading(true)
+			setIsError(false)
+			setComment('')
+			setRating(0)
+			getReviews()
+		}
+	}, [reviewBook])
 
-	render() {
-		return (
-			<>
-				{!this.props.content ? (
-					''
-				) : (
-					<>
-						<h5 className='mb-3'>
-							Reviews for: <b>{this.props.content.title}</b>
-						</h5>
-						<div>
-							{this.state.isLoading === true && <Loading />}
-							{this.state.isError === true && (
-								<Alert variant='danger'>There was an error loading the reviews</Alert>
-							)}
-							{this.state.reviews.length === 0 && !this.state.isLoading && (
-								<Alert variant='info'>No reviews found. Be the first to leave one!</Alert>
-							)}
-							{this.state.reviews.map(review => {
-								return (
-									<Review
-										review={review}
-										key={review._id}
-										api={this.api}
-										getReviews={this.getReviews}
-									/>
-								)
-							})}
-						</div>
-						<hr />
-						<h4>Add new review</h4>
-						<StarRating
-							rating={this.state.rating}
-							canChange={true}
-							setRating={this.setRating}
-							className='mb-3'
+	return (
+		<>
+			{!reviewBook ? (
+				''
+			) : (
+				<>
+					<h5 className='mb-3'>
+						Reviews for: <b>{reviewBook.title}</b>
+					</h5>
+					<div>
+						{isLoading === true && <Loading />}
+						{isError === true && (
+							<Alert variant='danger'>There was an error loading the reviews</Alert>
+						)}
+						{reviews.length === 0 && !isLoading && (
+							<Alert variant='info'>No reviews found. Be the first to leave one!</Alert>
+						)}
+						{reviews.map(review => {
+							return <Review review={review} key={review._id} api={api} getReviews={getReviews} />
+						})}
+					</div>
+					<hr />
+					<h4>Add new review</h4>
+					<StarRating rating={rating} canChange={true} setRating={setRating} className='mb-3' />
+					<FloatingLabel controlId='floatingTextarea' label='Comments' className='mb-3'>
+						<Form.Control
+							as='textarea'
+							placeholder='Leave a comment here'
+							rows={5}
+							value={comment}
+							onChange={e => setComment(e.target.value)}
 						/>
-						<FloatingLabel controlId='floatingTextarea' label='Comments' className='mb-3'>
-							<Form.Control
-								as='textarea'
-								placeholder='Leave a comment here'
-								rows={5}
-								value={this.state.comment}
-								onChange={e => this.setState({ comment: e.target.value })}
-							/>
-						</FloatingLabel>
-						<Button
-							variant='primary'
-							onClick={() => {
-								this.api({
-									method: 'POST',
-									id: '',
-									body: {
-										comment: this.state.comment,
-										rate: this.state.rating,
-										elementId: this.props.content.asin,
-									},
-									callback: () => {
-										this.setState({ comment: '', rating: 0 })
-										this.getReviews()
-									},
-								})
-							}}
-							disabled={this.state.comment.length === 0 || this.state.rating === 0}
-						>
-							Add rewiew
-						</Button>
-					</>
-				)}
-			</>
-		)
-	}
+					</FloatingLabel>
+					<Button
+						variant='primary'
+						onClick={() => {
+							api({
+								method: 'POST',
+								id: '',
+								body: {
+									comment: comment,
+									rate: rating,
+									elementId: reviewBook.asin,
+								},
+								callback: () => {
+									setComment('')
+									setRating(0)
+									getReviews()
+								},
+							})
+						}}
+						disabled={comment.length === 0 || rating === 0}
+					>
+						Add rewiew
+					</Button>
+				</>
+			)}
+		</>
+	)
 }
 
 export default Reviews
