@@ -38,7 +38,10 @@ const SingleBook = ({ setSelectedBooks, book, selectedBooks, setReviews }) => {
 	}
 
 	return (
-		<Card className={'h-100 bg-body-secondary border-2' + (isSelected() ? ' border-danger' : '')}>
+		<Card
+			className={'h-100 bg-body-secondary border-2' + (isSelected() ? ' border-danger' : '')}
+			role='card'
+		>
 			<div
 				className={'img-card-wrapper' + (isLoading ? ' loading' : '')}
 				onClick={() => {

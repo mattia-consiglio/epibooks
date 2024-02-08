@@ -16,14 +16,13 @@ import romanceBooks from '../data/romance.json'
 import scifiBooks from '../data/scifi.json'
 
 const AllTheBooks = () => {
-	const bookGenres = {
+	const [bookGenres, setBookGenres] = useState({
 		fantasy: fantasyBooks,
 		history: historyBooks,
 		horror: horrorBooks,
 		romance: romanceBooks,
 		scifi: scifiBooks,
-	}
-
+	})
 	const [currentBooksList, setCurrentBooksList] = useState([])
 	const [filterdBooksList, setFilterdBooksList] = useState([])
 	const [currentPage, setCurrentPage] = useState(1)
@@ -97,6 +96,7 @@ const AllTheBooks = () => {
 
 	useEffect(() => {
 		bookGenres.all = mergeBooks()
+		setBookGenres(bookGenres)
 		setCurrentBooksList(bookGenres.all)
 		setFilterdBooksList(bookGenres.all)
 		updatePageCount()
