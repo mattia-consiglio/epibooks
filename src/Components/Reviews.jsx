@@ -7,55 +7,61 @@ import Review from './Review'
 import Loading from './Loading'
 import Alert from 'react-bootstrap/Alert'
 
-export const Reviews = ({ reviewBook }) => {
+export const Reviews = ({ reviewBook, api = null }) => {
 	const [reviews, setReviews] = useState([])
 	const [isLoading, setIsLoading] = useState(true)
 	const [isError, setIsError] = useState(false)
 	const [rating, setRating] = useState(0)
 	const [comment, setComment] = useState('')
+	const [update, setUpdate] = useState(false)
 
-	const api = ({ method, id, callback, body }) => {
-		setIsLoading(true)
-		setIsError(false)
-		const options = {
-			method: method,
-			headers: {
-				'Authorization':
-					'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWJiOWVhZTViMjYxNTAwMTk4YTY5NDYiLCJpYXQiOjE3MDY3OTQ2NzEsImV4cCI6MTcwODAwNDI3MX0.g8wax-pYMp0IeigF7WBbGbErMj1p0aDu79cS1PGe4UM',
-			},
-		}
-		if (method === 'POST') {
-			options.body = JSON.stringify(body)
-			options.headers['Content-Type'] = 'application/json'
-		}
-		return fetch('https://striveschool-api.herokuapp.com/api/comments/' + id, options)
-			.then(res => {
-				if (res.ok) {
-					return res.json()
-				} else {
-					throw new Error('Something went wrong')
+	api = api
+		? api
+		: async ({ method, id, callback, body }) => {
+				setIsLoading(true)
+				setIsError(false)
+				const options = {
+					method: method,
+					headers: {
+						'Authorization':
+							'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWJiOWVhZTViMjYxNTAwMTk4YTY5NDYiLCJpYXQiOjE3MDY3OTQ2NzEsImV4cCI6MTcwODAwNDI3MX0.g8wax-pYMp0IeigF7WBbGbErMj1p0aDu79cS1PGe4UM',
+					},
 				}
-			})
-			.then(data => {
-				setIsLoading(false)
-				return callback(data)
-			})
-			.catch(err => {
-				setIsLoading(false)
-				setIsError(true)
-			})
-	}
-
-	const getReviews = () => {
-		console.log('getReviews')
-		api({
-			method: 'GET',
-			id: reviewBook.asin,
-			callback: data => setReviews(data),
-		})
-	}
+				if (method === 'POST') {
+					options.body = JSON.stringify(body)
+					options.headers['Content-Type'] = 'application/json'
+				}
+				return fetch('https://striveschool-api.herokuapp.com/api/comments/' + id, options)
+					.then(res => {
+						if (res.ok) {
+							return res.json()
+						} else {
+							throw new Error('Something went wrong')
+						}
+					})
+					.then(data => {
+						setIsLoading(false)
+						return callback(data)
+					})
+					.catch(err => {
+						setIsLoading(false)
+						setIsError(true)
+					})
+		  }
 
 	useEffect(() => {
+		const getReviews = async () => {
+			// console.log('getReviews')
+			await api({
+				method: 'GET',
+				id: reviewBook.asin,
+				callback: data => {
+					console.log('data', data)
+					setReviews(data)
+				},
+			})
+		}
+
 		if (reviewBook !== null) {
 			setIsLoading(true)
 			setIsError(false)
@@ -63,7 +69,7 @@ export const Reviews = ({ reviewBook }) => {
 			setRating(0)
 			getReviews()
 		}
-	}, [reviewBook])
+	}, [reviewBook, update])
 
 	return (
 		<>
@@ -83,7 +89,15 @@ export const Reviews = ({ reviewBook }) => {
 							<Alert variant='info'>No reviews found. Be the first to leave one!</Alert>
 						)}
 						{reviews.map(review => {
-							return <Review review={review} key={review._id} api={api} getReviews={getReviews} />
+							return (
+								<Review
+									review={review}
+									key={review._id}
+									api={api}
+									setUpdate={setUpdate}
+									update={update}
+								/>
+							)
 						})}
 					</div>
 					<hr />
@@ -112,7 +126,7 @@ export const Reviews = ({ reviewBook }) => {
 								callback: () => {
 									setComment('')
 									setRating(0)
-									getReviews()
+									setUpdate(!update)
 								},
 							})
 						}}

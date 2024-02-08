@@ -20,7 +20,7 @@ const SingleBook = ({ setSelectedBooks, book, selectedBooks, setReviews }) => {
 		localStorage.setItem('selectedBooks', JSON.stringify([...selectedBooks]))
 	}
 	useEffect(() => {
-		if (selectedBooks.has(book.asin)) {
+		if (selectedBooks.length > 0 && selectedBooks.has(book.asin)) {
 			setSelected(true)
 		} else {
 			setSelected(false)
@@ -86,7 +86,11 @@ const SingleBook = ({ setSelectedBooks, book, selectedBooks, setReviews }) => {
 						variant={!isSelected() ? 'outline-danger' : 'danger'}
 						onClick={() => toggleSelected()}
 					>
-						{isSelected() ? <IoHeart /> : <IoHeartOutline />}
+						{isSelected() ? (
+							<IoHeart title='Remove from wishlist' />
+						) : (
+							<IoHeartOutline title='Add to wishlist' />
+						)}
 					</Button>
 				</div>
 				<Button

@@ -16,13 +16,11 @@ function StarRating({ rating, canChange, setRating = () => {}, className = '' })
 					className={'rating-label' + (i + 1 <= rating ? ' rating-label-selected' : '')}
 					onMouseEnter={() => {
 						if (canChange) {
-							// setHover(true)
 							SetTempRating(i + 1)
 						}
 					}}
 					onMouseLeave={() => {
 						if (canChange) {
-							// setHover(false)
 							SetTempRating(rating)
 						}
 					}}
@@ -46,9 +44,15 @@ function StarRating({ rating, canChange, setRating = () => {}, className = '' })
 						className='rating-input'
 					/>
 					{i + 1 <= tempRating ? (
-						<IoStar className='rating-star' />
+						<IoStar
+							className='rating-star'
+							title={i + 1 === 1 ? `${i + 1} star` : `${i + 1} stars`}
+						/>
 					) : (
-						<IoStarOutline className='rating-star' />
+						<IoStarOutline
+							className='rating-star'
+							title={i + 1 === 1 ? `${i + 1} star` : `${i + 1} stars`}
+						/>
 					)}
 				</label>
 			))}
