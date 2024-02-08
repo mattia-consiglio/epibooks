@@ -7,7 +7,9 @@ function MyNav() {
 	return (
 		<Navbar collapseOnSelect expand='lg' className='bg-body-tertiary'>
 			<Container>
-				<Navbar.Brand href='#home'>EpiBooks</Navbar.Brand>
+				<Navbar.Brand href='#home'>
+					<img src='logo.png' alt='Logo' /> Epibooks
+				</Navbar.Brand>
 				<Navbar.Toggle aria-controls='responsive-navbar-nav' />
 				<Navbar.Collapse id='responsive-navbar-nav' className='justify-content-end'>
 					<Nav>
