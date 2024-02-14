@@ -1,24 +1,28 @@
-import React from 'react'
-import Pagination from 'react-bootstrap/Pagination'
+import Pagination from "react-bootstrap/Pagination";
+
+import PropTypes from "prop-types";
 
 function MyPagination({ currentPage, pageCount, updateCurrentPage }) {
 	if (pageCount === 0) {
-		return <></>
+		return <></>;
 	}
 
-	const maxPagesToShow = 7
-	let startPage = Math.max(1, currentPage - 2)
-	let endPage = Math.min(pageCount, currentPage + 2)
+	const maxPagesToShow = 7;
+	let startPage = Math.max(1, currentPage - 2);
+	let endPage = Math.min(pageCount, currentPage + 2);
 
 	if (currentPage <= 4) {
-		endPage = Math.min(maxPagesToShow, pageCount)
+		endPage = Math.min(maxPagesToShow, pageCount);
 	} else if (currentPage + 2 >= pageCount) {
-		startPage = Math.max(pageCount - maxPagesToShow + 1, 1)
+		startPage = Math.max(pageCount - maxPagesToShow + 1, 1);
 	}
 
 	return (
 		<Pagination>
-			<Pagination.First onClick={() => updateCurrentPage(1)} disabled={currentPage === 1} />
+			<Pagination.First
+				onClick={() => updateCurrentPage(1)}
+				disabled={currentPage === 1}
+			/>
 			<Pagination.Prev
 				onClick={() => updateCurrentPage(currentPage - 1)}
 				disabled={currentPage === 1}
@@ -26,7 +30,9 @@ function MyPagination({ currentPage, pageCount, updateCurrentPage }) {
 
 			{startPage > 1 && (
 				<>
-					<Pagination.Item onClick={() => updateCurrentPage(1)}>1</Pagination.Item>
+					<Pagination.Item onClick={() => updateCurrentPage(1)}>
+						1
+					</Pagination.Item>
 					{startPage > 2 && <Pagination.Ellipsis disabled />}
 				</>
 			)}
@@ -59,7 +65,13 @@ function MyPagination({ currentPage, pageCount, updateCurrentPage }) {
 				disabled={currentPage === pageCount}
 			/>
 		</Pagination>
-	)
+	);
 }
 
-export default MyPagination
+MyPagination.propTypes = {
+	currentPage: PropTypes.number.isRequired,
+	pageCount: PropTypes.number.isRequired,
+	updateCurrentPage: PropTypes.func.isRequired,
+};
+
+export default MyPagination;

@@ -1,13 +1,13 @@
-import 'bootstrap/dist/css/bootstrap.min.css'
-import './css/App.scss'
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./css/App.scss";
 
 // import React from 'react'
 
-import MyNav from './Components/MyNav'
-import MyFooter from './Components/MyFooter'
-import AllTheBooks from './Components/AllTheBooks'
+import MyNav from "./Components/MyNav";
+import MyFooter from "./Components/MyFooter";
+import AllTheBooks from "./Components/AllTheBooks";
 
-// import { Analytics } from '@vercel/analytics/react'
+import { Analytics } from "@vercel/analytics/react";
 
 function App() {
 	return (
@@ -21,9 +21,9 @@ function App() {
 			<footer>
 				<MyFooter />
 			</footer>
-			{/* <Analytics /> */}
+			<Analytics />
 		</>
-	)
+	);
 }
 
-export default App
+export default App;
