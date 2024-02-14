@@ -7,7 +7,7 @@ import Review from './Review'
 import Loading from './Loading'
 import Alert from 'react-bootstrap/Alert'
 
-export const Reviews = ({ reviewBook, api = null }) => {
+export const Reviews = ({ reviewBook }) => {
 	const [reviews, setReviews] = useState([])
 	const [isLoading, setIsLoading] = useState(true)
 	const [isError, setIsError] = useState(false)
@@ -15,39 +15,37 @@ export const Reviews = ({ reviewBook, api = null }) => {
 	const [comment, setComment] = useState('')
 	const [update, setUpdate] = useState(false)
 
-	api = api
-		? api
-		: async ({ method, id, callback, body }) => {
-				setIsLoading(true)
-				setIsError(false)
-				const options = {
-					method: method,
-					headers: {
-						'Authorization':
-							'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWJiOWVhZTViMjYxNTAwMTk4YTY5NDYiLCJpYXQiOjE3MDY3OTQ2NzEsImV4cCI6MTcwODAwNDI3MX0.g8wax-pYMp0IeigF7WBbGbErMj1p0aDu79cS1PGe4UM',
-					},
+	const api = async ({ method, id, callback, body }) => {
+		setIsLoading(true)
+		setIsError(false)
+		const options = {
+			method: method,
+			headers: {
+				'Authorization':
+					'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWJiOWVhZTViMjYxNTAwMTk4YTY5NDYiLCJpYXQiOjE3MDY3OTQ2NzEsImV4cCI6MTcwODAwNDI3MX0.g8wax-pYMp0IeigF7WBbGbErMj1p0aDu79cS1PGe4UM',
+			},
+		}
+		if (method === 'POST') {
+			options.body = JSON.stringify(body)
+			options.headers['Content-Type'] = 'application/json'
+		}
+		return fetch('https://striveschool-api.herokuapp.com/api/comments/' + id, options)
+			.then(res => {
+				if (res.ok) {
+					return res.json()
+				} else {
+					throw new Error('Something went wrong')
 				}
-				if (method === 'POST') {
-					options.body = JSON.stringify(body)
-					options.headers['Content-Type'] = 'application/json'
-				}
-				return fetch('https://striveschool-api.herokuapp.com/api/comments/' + id, options)
-					.then(res => {
-						if (res.ok) {
-							return res.json()
-						} else {
-							throw new Error('Something went wrong')
-						}
-					})
-					.then(data => {
-						setIsLoading(false)
-						return callback(data)
-					})
-					.catch(err => {
-						setIsLoading(false)
-						setIsError(true)
-					})
-		  }
+			})
+			.then(data => {
+				setIsLoading(false)
+				return callback(data)
+			})
+			.catch(err => {
+				setIsLoading(false)
+				setIsError(true)
+			})
+	}
 
 	useEffect(() => {
 		const getReviews = async () => {
@@ -85,7 +83,7 @@ export const Reviews = ({ reviewBook, api = null }) => {
 						{isError === true && (
 							<Alert variant='danger'>There was an error loading the reviews</Alert>
 						)}
-						{reviews.length === 0 && !isLoading && (
+						{reviews.length === 0 && !isLoading && !isError && (
 							<Alert variant='info'>No reviews found. Be the first to leave one!</Alert>
 						)}
 						{reviews.map(review => {

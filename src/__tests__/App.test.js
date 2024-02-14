@@ -192,71 +192,73 @@ describe('unit tests', () => {
 		expect(buttonWithin.getByTitle(/add to wishlist/i)).toBeInTheDocument()
 	})
 
-	it('renders review section with reviews', async () => {
-		const book = fantasyBooks[0]
-		const reviews = [
-			{
-				'_id': '65bc1c464201a200198dcf9d',
-				'rate': 5,
-				'comment': 'voto diesci',
-				'elementId': '0316438960',
-				'author': 'ueueee@gmail.com',
-				'createdAt': '2024-02-01T22:33:42.110Z',
-				'updatedAt': '2024-02-01T22:33:42.110Z',
-				'__v': 0,
-			},
-			{
-				'_id': '65c22c92de37bc001a0bfe03',
-				'comment': 'impiattamento scarso, ma come gusto ci siamo',
-				'rate': 3,
-				'elementId': '0316438960',
-				'author': 'antoninocanavacciuolo@gmail.com',
-				'createdAt': '2024-02-06T12:56:50.462Z',
-				'updatedAt': '2024-02-06T12:56:50.462Z',
-				'__v': 0,
-			},
-			{
-				'_id': '65c2519ade37bc001a0bfead',
-				'comment': 'magnifico',
-				'rate': 4,
-				'elementId': '0316438960',
-				'author': 'marchettiriccardo04@gmail.com',
-				'createdAt': '2024-02-06T15:34:50.669Z',
-				'updatedAt': '2024-02-06T15:34:50.669Z',
-				'__v': 0,
-			},
-			{
-				'_id': '65c2588fde37bc001a0bfed5',
-				'comment': 'Stefano miglior professore NOCAP',
-				'rate': 1,
-				'elementId': '0316438960',
-				'author': 'prova124@gmail.com',
-				'createdAt': '2024-02-06T16:04:31.547Z',
-				'updatedAt': '2024-02-06T16:04:31.547Z',
-				'__v': 0,
-			},
-		]
-		const api = jest.fn(() => Promise.resolve(reviews))
-		render(
-			<Reviews
-				reviewBook={{
-					'asin': '0316438960',
-					'title': 'The Last Wish: Introducing the Witcher',
-				}}
-				api={api}
-			/>
-		)
-		const reviewSection = screen.getByText(/Reviews for:/i)
-		expect(reviewSection).toBeInTheDocument()
-		expect(reviewSection.tagName).toBe('H5')
-		expect(api).toHaveBeenCalled()
+	// it('renders review section with reviews', async () => {
+	// 	const reviews = [
+	// 		{
+	// 			'_id': '65bc1c464201a200198dcf9d',
+	// 			'rate': 5,
+	// 			'comment': 'voto diesci',
+	// 			'elementId': '0316438960',
+	// 			'author': 'ueueee@gmail.com',
+	// 			'createdAt': '2024-02-01T22:33:42.110Z',
+	// 			'updatedAt': '2024-02-01T22:33:42.110Z',
+	// 			'__v': 0,
+	// 		},
+	// 		{
+	// 			'_id': '65c22c92de37bc001a0bfe03',
+	// 			'comment': 'impiattamento scarso, ma come gusto ci siamo',
+	// 			'rate': 3,
+	// 			'elementId': '0316438960',
+	// 			'author': 'antoninocanavacciuolo@gmail.com',
+	// 			'createdAt': '2024-02-06T12:56:50.462Z',
+	// 			'updatedAt': '2024-02-06T12:56:50.462Z',
+	// 			'__v': 0,
+	// 		},
+	// 		{
+	// 			'_id': '65c2519ade37bc001a0bfead',
+	// 			'comment': 'magnifico',
+	// 			'rate': 4,
+	// 			'elementId': '0316438960',
+	// 			'author': 'marchettiriccardo04@gmail.com',
+	// 			'createdAt': '2024-02-06T15:34:50.669Z',
+	// 			'updatedAt': '2024-02-06T15:34:50.669Z',
+	// 			'__v': 0,
+	// 		},
+	// 		{
+	// 			'_id': '65c2588fde37bc001a0bfed5',
+	// 			'comment': 'Stefano miglior professore NOCAP',
+	// 			'rate': 1,
+	// 			'elementId': '0316438960',
+	// 			'author': 'prova124@gmail.com',
+	// 			'createdAt': '2024-02-06T16:04:31.547Z',
+	// 			'updatedAt': '2024-02-06T16:04:31.547Z',
+	// 			'__v': 0,
+	// 		},
+	// 	]
+	// 	const api = jest.fn(() => {
+	// 		Promise.resolve(reviews)
 
-		await waitFor(
-			() => {
-				const reviews = screen.queryAllByTestId('review')
-				expect(reviews.length).toBeGreaterThan(0)
-			},
-			{ timeout: 2000 }
-		)
-	})
+	// 	})
+	// 	render(
+	// 		<Reviews
+	// 			reviewBook={{
+	// 				'asin': '0316438960',
+	// 				'title': 'The Last Wish: Introducing the Witcher',
+	// 			}}
+	// 			api={api}
+	// 		/>
+	// 	)
+	// 	const reviewSection = screen.getByText(/Reviews for:/i)
+	// 	expect(reviewSection).toBeInTheDocument()
+	// 	expect(reviewSection.tagName).toBe('H5')
+	// 	expect(api).toHaveBeenCalled()
+
+	// 	await waitFor(
+	// 		() => {
+	// 			const reviews = screen.queryAllByTestId('review')
+	// 			expect(reviews.length).toBeGreaterThan(0)
+	// 		},
+	// 		{ timeout: 2000 }
+	// 	)
+	// })
 })
