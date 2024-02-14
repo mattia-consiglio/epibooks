@@ -1,9 +1,7 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
-import { info } from 'console'
-import App from '../App'
+import { expect, test, describe } from 'vitest'
 import AllTheBooks from '../Components/AllTheBooks'
 import SingleBook from '../Components/SingleBook'
-import Reviews from '../Components/Reviews'
 import fantasyBooks from '../data/fantasy.json'
 
 const firstLetterToUpperCase = str => {
@@ -11,7 +9,7 @@ const firstLetterToUpperCase = str => {
 }
 
 describe('initial mounting', () => {
-	it('renders welcome message', () => {
+	test('renders welcome message', () => {
 		render(<AllTheBooks />)
 		const alertElement = screen.getByText(/Welcome on the EpiBooks website!/i)
 		expect(alertElement).toBeInTheDocument()
@@ -19,13 +17,13 @@ describe('initial mounting', () => {
 		expect(alertElement).toHaveClass('alert alert-info')
 	})
 
-	it('renders the correct number of cards', () => {
+	test('renders the correct number of cards', () => {
 		render(<AllTheBooks />)
 		const cards = screen.getAllByRole('card')
 		expect(cards).toHaveLength(12)
 	})
 
-	it('renders the comment section', () => {
+	test('renders the comment section', () => {
 		render(<AllTheBooks />)
 		const reviewButtons = screen.getAllByText(/reviews/i)
 
@@ -49,7 +47,7 @@ describe('initial mounting', () => {
 })
 
 describe('filtering', () => {
-	it('filters by genre', () => {
+	test('filters by genre', () => {
 		render(<AllTheBooks />)
 		const genreSelect = screen.getByRole('combobox')
 		expect(genreSelect).toBeInTheDocument()
@@ -81,7 +79,7 @@ describe('filtering', () => {
 		})
 	})
 
-	it('filters by search', async () => {
+	test('filters by search', async () => {
 		render(<AllTheBooks />)
 		const searchInput = screen.getByPlaceholderText(/Search for a book/i)
 		expect(searchInput).toBeInTheDocument()
@@ -105,7 +103,7 @@ describe('filtering', () => {
 })
 
 describe('unit tests', () => {
-	it('renders a book', () => {
+	test('renders a book', () => {
 		const book = fantasyBooks[0]
 		let selectedBooks = new Set()
 		const setSelectedBooks = books => {
@@ -191,74 +189,4 @@ describe('unit tests', () => {
 		expect(whishlistButton).not.toHaveClass('btn-danger')
 		expect(buttonWithin.getByTitle(/add to wishlist/i)).toBeInTheDocument()
 	})
-
-	// it('renders review section with reviews', async () => {
-	// 	const reviews = [
-	// 		{
-	// 			'_id': '65bc1c464201a200198dcf9d',
-	// 			'rate': 5,
-	// 			'comment': 'voto diesci',
-	// 			'elementId': '0316438960',
-	// 			'author': 'ueueee@gmail.com',
-	// 			'createdAt': '2024-02-01T22:33:42.110Z',
-	// 			'updatedAt': '2024-02-01T22:33:42.110Z',
-	// 			'__v': 0,
-	// 		},
-	// 		{
-	// 			'_id': '65c22c92de37bc001a0bfe03',
-	// 			'comment': 'impiattamento scarso, ma come gusto ci siamo',
-	// 			'rate': 3,
-	// 			'elementId': '0316438960',
-	// 			'author': 'antoninocanavacciuolo@gmail.com',
-	// 			'createdAt': '2024-02-06T12:56:50.462Z',
-	// 			'updatedAt': '2024-02-06T12:56:50.462Z',
-	// 			'__v': 0,
-	// 		},
-	// 		{
-	// 			'_id': '65c2519ade37bc001a0bfead',
-	// 			'comment': 'magnifico',
-	// 			'rate': 4,
-	// 			'elementId': '0316438960',
-	// 			'author': 'marchettiriccardo04@gmail.com',
-	// 			'createdAt': '2024-02-06T15:34:50.669Z',
-	// 			'updatedAt': '2024-02-06T15:34:50.669Z',
-	// 			'__v': 0,
-	// 		},
-	// 		{
-	// 			'_id': '65c2588fde37bc001a0bfed5',
-	// 			'comment': 'Stefano miglior professore NOCAP',
-	// 			'rate': 1,
-	// 			'elementId': '0316438960',
-	// 			'author': 'prova124@gmail.com',
-	// 			'createdAt': '2024-02-06T16:04:31.547Z',
-	// 			'updatedAt': '2024-02-06T16:04:31.547Z',
-	// 			'__v': 0,
-	// 		},
-	// 	]
-	// 	const api = jest.fn(() => {
-	// 		Promise.resolve(reviews)
-
-	// 	})
-	// 	render(
-	// 		<Reviews
-	// 			reviewBook={{
-	// 				'asin': '0316438960',
-	// 				'title': 'The Last Wish: Introducing the Witcher',
-	// 			}}
-	// 			api={api}
-	// 		/>
-	// 	)
-	// 	const reviewSection = screen.getByText(/Reviews for:/i)
-	// 	expect(reviewSection).toBeInTheDocument()
-	// 	expect(reviewSection.tagName).toBe('H5')
-	// 	expect(api).toHaveBeenCalled()
-
-	// 	await waitFor(
-	// 		() => {
-	// 			const reviews = screen.queryAllByTestId('review')
-	// 			expect(reviews.length).toBeGreaterThan(0)
-	// 		},
-	// 		{ timeout: 2000 }
-	// 	)
-	// })
 })

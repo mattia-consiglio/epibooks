@@ -29,6 +29,8 @@ export const Reviews = ({ reviewBook }) => {
 			options.body = JSON.stringify(body)
 			options.headers['Content-Type'] = 'application/json'
 		}
+		console.log('options', options)
+		console.log('id', id)
 		return fetch('https://striveschool-api.herokuapp.com/api/comments/' + id, options)
 			.then(res => {
 				if (res.ok) {

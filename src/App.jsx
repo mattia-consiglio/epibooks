@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './css/App.scss'
 
-import React from 'react'
+// import React from 'react'
 
 import MyNav from './Components/MyNav'
 import MyFooter from './Components/MyFooter'
