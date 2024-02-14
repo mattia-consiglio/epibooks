@@ -99,6 +99,7 @@ const AllTheBooks = () => {
 	};
 
 	useEffect(() => {
+		if ("all" in bookGenres) return;
 		bookGenres.all = mergeBooks();
 		setBookGenres(bookGenres);
 		setCurrentBooksList(bookGenres.all);
@@ -112,7 +113,7 @@ const AllTheBooks = () => {
 			});
 			setSelectedBooks(selectedBooks);
 		}
-	}, [bookGenres, mergeBooks, selectedBooks, updatePageCount]);
+	}, [bookGenres, selectedBooks, mergeBooks, updatePageCount]);
 
 	useEffect(() => {
 		updatePageCount();
