@@ -3,7 +3,7 @@ import "./css/App.scss";
 
 // import React from 'react'
 
-import MyNav from "./Components/MyNav";
+import MyNav from "./Components/MyNav.tsx";
 import MyFooter from "./Components/MyFooter";
 import AllTheBooks from "./Components/AllTheBooks";
 

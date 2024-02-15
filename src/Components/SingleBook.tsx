@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import {
@@ -8,18 +8,27 @@ import {
 	IoStarOutline,
 } from "react-icons/io5";
 import Placeholder from "react-bootstrap/Placeholder";
-import PropTypes from "prop-types";
+import { BookInterfce } from "./types";
 
-const SingleBook = ({ setSelectedBooks, book, selectedBooks, setReviews }) => {
-	SingleBook.propTypes = {
-		book: PropTypes.object.isRequired,
-		selectedBooks: PropTypes.object.isRequired,
-		setSelectedBooks: PropTypes.func.isRequired,
-		setReviews: PropTypes.func.isRequired,
-	};
+interface SingleBookProps {
+	book: BookInterfce;
+	selectedBooks: Set<string>;
+	setSelectedBooks: (selectedBooks: Set<string>) => void;
+	setReviews: (reviews: any) => void;
+}
 
+interface customStleProperties extends React.CSSProperties {
+	"--img": string;
+}
+
+const SingleBook = ({
+	setSelectedBooks,
+	book,
+	selectedBooks,
+	setReviews,
+}: SingleBookProps) => {
 	const { img, title, price, asin, category } = book;
-	const [selected, setSelected] = useState();
+	const [selected, setSelected] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);
 	const imageRef = useRef();
 
@@ -33,7 +42,7 @@ const SingleBook = ({ setSelectedBooks, book, selectedBooks, setReviews }) => {
 		localStorage.setItem("selectedBooks", JSON.stringify([...selectedBooks]));
 	};
 	useEffect(() => {
-		if (selectedBooks.length > 0 && selectedBooks.has(book.asin)) {
+		if (selectedBooks.size > 0 && selectedBooks.has(book.asin)) {
 			setSelected(true);
 		} else {
 			setSelected(false);
@@ -62,7 +71,7 @@ const SingleBook = ({ setSelectedBooks, book, selectedBooks, setReviews }) => {
 				onClick={() => {
 					toggleSelected();
 				}}
-				style={{ "--img": "url('" + img + "')" }}
+				style={{ backgroundImage: "url('" + img + "')" }}
 			>
 				<Placeholder
 					as="div"
@@ -80,7 +89,6 @@ const SingleBook = ({ setSelectedBooks, book, selectedBooks, setReviews }) => {
 					src={img}
 					alt={title}
 					className="card-img-fixed-height p-2"
-					ref={imageRef}
 					style={{ opacity: isLoading ? 0 : 1 }}
 					onLoad={() => {
 						setIsLoading(false);
@@ -92,7 +100,7 @@ const SingleBook = ({ setSelectedBooks, book, selectedBooks, setReviews }) => {
 				<Card.Title>{title}</Card.Title>
 				<div className="text-primary h4 flex-grow-1">€ {price}</div>
 				<Card.Text>
-					Category: {category.charAt().toUpperCase() + category.slice(1)}
+					Category: {category.charAt(0).toUpperCase() + category.slice(1)}
 				</Card.Text>
 				<Card.Text>ASIN: {asin}</Card.Text>
 				<div className="d-flex justify-content-between column-gap-3 mb-2">

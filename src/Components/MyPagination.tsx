@@ -1,6 +1,5 @@
+import React from "react";
 import Pagination from "react-bootstrap/Pagination";
-
-import PropTypes from "prop-types";
 
 function MyPagination({ currentPage, pageCount, updateCurrentPage }) {
 	if (pageCount === 0) {
@@ -67,11 +66,5 @@ function MyPagination({ currentPage, pageCount, updateCurrentPage }) {
 		</Pagination>
 	);
 }
-
-MyPagination.propTypes = {
-	currentPage: PropTypes.number.isRequired,
-	pageCount: PropTypes.number.isRequired,
-	updateCurrentPage: PropTypes.func.isRequired,
-};
 
 export default MyPagination;

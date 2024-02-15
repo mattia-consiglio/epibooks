@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import StarRating from "./StarRating";
@@ -6,24 +6,34 @@ import Form from "react-bootstrap/Form";
 import Review from "./Review";
 import Loading from "./Loading";
 import Alert from "react-bootstrap/Alert";
-import PropTypes from "prop-types";
+
+interface Api {
+	method: string;
+	id: string;
+	callback: (data: Review[]) => void;
+	body?: object;
+}
+
+interface Review {
+	_id: string;
+	asin: string;
+	rate: number;
+	comment: string;
+	author: string;
+}
 
 export const Reviews = ({ reviewBook }) => {
-	Reviews.propTypes = {
-		reviewBook: PropTypes.string.isRequired,
-	};
-
-	const [reviews, setReviews] = useState([]);
+	const [reviews, setReviews] = useState<Review[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [isError, setIsError] = useState(false);
 	const [rating, setRating] = useState(0);
 	const [comment, setComment] = useState("");
 	const [update, setUpdate] = useState(false);
 
-	const api = async ({ method, id, callback, body }) => {
+	const api = async ({ method, id, callback, body }: Api) => {
 		setIsLoading(true);
 		setIsError(false);
-		const options = {
+		const options: RequestInit = {
 			method: method,
 			headers: {
 				Authorization:
@@ -32,7 +42,7 @@ export const Reviews = ({ reviewBook }) => {
 		};
 		if (method === "POST") {
 			options.body = JSON.stringify(body);
-			options.headers["Content-Type"] = "application/json";
+			options.headers!["Content-Type"] = "application/json";
 		}
 		return fetch(
 			"https://striveschool-api.herokuapp.com/api/comments/" + id,

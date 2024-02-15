@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 import Container from "react-bootstrap/Container";
 import Alert from "react-bootstrap/Alert";
@@ -9,37 +9,53 @@ import SingleBook from "./SingleBook";
 import MyPagination from "./MyPagination";
 import Reviews from "./Reviews";
 import { IoSearch } from "react-icons/io5";
+import { BookInterfce } from "./types";
 
-import fantasyBooks from "../data/fantasy.json";
-import historyBooks from "../data/history.json";
-import horrorBooks from "../data/horror.json";
-import romanceBooks from "../data/romance.json";
-import scifiBooks from "../data/scifi.json";
+import fantasyBooksImport from "../data/fantasy.json";
+import historyBooksImport from "../data/history.json";
+import horrorBooksImport from "../data/horror.json";
+import romanceBooksImport from "../data/romance.json";
+import scifiBooksImport from "../data/scifi.json";
+
+const fantasyBooks: BookInterfce[] = fantasyBooksImport;
+const historyBooks: BookInterfce[] = historyBooksImport;
+const horrorBooks: BookInterfce[] = horrorBooksImport;
+const romanceBooks: BookInterfce[] = romanceBooksImport;
+const scifiBooks: BookInterfce[] = scifiBooksImport;
+
+interface BookGenres {
+	fantasy: BookInterfce[];
+	history: BookInterfce[];
+	horror: BookInterfce[];
+	romance: BookInterfce[];
+	scifi: BookInterfce[];
+	all?: BookInterfce[];
+}
 
 const AllTheBooks = () => {
-	const [bookGenres, setBookGenres] = useState({
+	const [bookGenres, setBookGenres] = useState<BookGenres>({
 		fantasy: fantasyBooks,
 		history: historyBooks,
 		horror: horrorBooks,
 		romance: romanceBooks,
 		scifi: scifiBooks,
 	});
-	const [currentBooksList, setCurrentBooksList] = useState([]);
-	const [filterdBooksList, setFilterdBooksList] = useState([]);
+	const [currentBooksList, setCurrentBooksList] = useState<BookInterfce[]>([]);
+	const [filterdBooksList, setFilterdBooksList] = useState<BookInterfce[]>([]);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [booksPerPage, setBooksPerPage] = useState(12);
 	const [pageCount, setPageCount] = useState(1);
 	const [search, setSearch] = useState("");
-	const [selectedBooks, setSelectedBooks] = useState(new Set());
+	const [selectedBooks, setSelectedBooks] = useState<Set<string>>(new Set());
 	const [reviewBook, setReviewBook] = useState(null);
 
 	const mergeBooks = useCallback(() => {
-		const books = [];
+		const books: BookInterfce[] = [];
 		for (let genre in bookGenres) {
 			if (genre === "all") {
 				continue;
 			}
-			const genreBooks = bookGenres[genre];
+			const genreBooks: BookInterfce[] = bookGenres[genre];
 			if (genreBooks.length > 0) {
 				genreBooks.forEach((book) => {
 					const index = books.length
@@ -50,7 +66,7 @@ const AllTheBooks = () => {
 					} else {
 						const categories = books[index].category.split(", ");
 						const newCategory =
-							book.category.charAt().toUpperCase() + book.category.slice(1);
+							book.category.charAt(0).toUpperCase() + book.category.slice(1);
 						if (!categories.includes(newCategory)) {
 							categories.push(newCategory);
 							books[index].category = categories.join(", ");
@@ -70,8 +86,8 @@ const AllTheBooks = () => {
 
 	const filterBooks = useCallback(() => {
 		const funcSearch = search.toLowerCase().trim();
-		const books = currentBooksList;
-		let filteredBooks = [];
+		const books = currentBooksList as BookInterfce[];
+		let filteredBooks: BookInterfce[] = [];
 		if (funcSearch !== "") {
 			filteredBooks = books.filter((book) => {
 				const bookTitle = book.title.toLowerCase().trim();
@@ -91,7 +107,7 @@ const AllTheBooks = () => {
 		setCurrentPage(currentPage);
 	};
 
-	const changeGenre = (e) => {
+	const changeGenre = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		const selectedGenre = e.target.value;
 
 		setCurrentBooksList(bookGenres[selectedGenre] || []);
@@ -173,7 +189,7 @@ const AllTheBooks = () => {
 									<p className="mb-1 me-2">Genre:</p>
 									<Form.Select
 										aria-label="Select genre"
-										onChange={(e) => changeGenre(e)}
+										onChange={(e) => changeGenre(e.target.value)}
 										defaultValue="all"
 									>
 										<option value="all">All</option>
@@ -192,7 +208,7 @@ const AllTheBooks = () => {
 										max="100"
 										value={booksPerPage}
 										step={4}
-										onChange={(e) => setBooksPerPage(e.target.value)}
+										onChange={(e) => setBooksPerPage(parseInt(e.target.value))}
 									/>
 								</div>
 							</div>
@@ -206,7 +222,7 @@ const AllTheBooks = () => {
 							type="search"
 							placeholder="Search for a book"
 							value={search}
-							onInput={(e) => {
+							onChange={(e) => {
 								setSearch(e.target.value);
 							}}
 						/>

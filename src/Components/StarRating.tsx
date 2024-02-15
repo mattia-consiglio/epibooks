@@ -1,20 +1,20 @@
+import React from "react";
 import { useState } from "react";
 import { IoStar, IoStarOutline } from "react-icons/io5";
-import PropTypes from "prop-types";
+
+interface StarRatingProps {
+	rating: number;
+	canChange: boolean;
+	setRating?: (rating: number) => void;
+	className?: string;
+}
 
 function StarRating({
 	rating,
 	canChange,
 	setRating = () => {},
 	className = "",
-}) {
-	StarRating.propTypes = {
-		rating: PropTypes.number.isRequired,
-		canChange: PropTypes.bool.isRequired,
-		setRating: PropTypes.func,
-		className: PropTypes.string,
-	};
-
+}: StarRatingProps) {
 	const [tempRating, SetTempRating] = useState(rating);
 
 	return (
@@ -55,7 +55,7 @@ function StarRating({
 						value={i + 1}
 						disabled={!canChange}
 						onChange={(e) => {
-							setRating(e.target.value);
+							setRating(parseInt(e.target.value));
 						}}
 						checked={i + 1 === tempRating}
 						className="rating-input"

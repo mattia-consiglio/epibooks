@@ -2,6 +2,7 @@ import StarRating from "./StarRating";
 import { IoTrash } from "react-icons/io5";
 import Button from "react-bootstrap/Button";
 import PropTypes from "prop-types";
+import React from "react";
 
 function Review({ review, api, setUpdate, update }) {
 	const { comment, rate, author } = review;
