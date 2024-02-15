@@ -189,7 +189,7 @@ const AllTheBooks = () => {
 									<p className="mb-1 me-2">Genre:</p>
 									<Form.Select
 										aria-label="Select genre"
-										onChange={(e) => changeGenre(e.target.value)}
+										onChange={(e) => changeGenre(e)}
 										defaultValue="all"
 									>
 										<option value="all">All</option>

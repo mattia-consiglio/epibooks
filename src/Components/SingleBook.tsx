@@ -71,7 +71,7 @@ const SingleBook = ({
 				onClick={() => {
 					toggleSelected();
 				}}
-				style={{ backgroundImage: "url('" + img + "')" }}
+				style={{ ["--img" as string]: "url('" + img + "')" }}
 			>
 				<Placeholder
 					as="div"

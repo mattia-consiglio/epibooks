@@ -33,11 +33,11 @@ export const Reviews = ({ reviewBook }) => {
 	const api = async ({ method, id, callback, body }: Api) => {
 		setIsLoading(true);
 		setIsError(false);
+		const key = import.meta.env.VITE_API_KEY;
 		const options: RequestInit = {
 			method: method,
 			headers: {
-				Authorization:
-					"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWJiOWVhZTViMjYxNTAwMTk4YTY5NDYiLCJpYXQiOjE3MDY3OTQ2NzEsImV4cCI6MTcwODAwNDI3MX0.g8wax-pYMp0IeigF7WBbGbErMj1p0aDu79cS1PGe4UM",
+				Authorization: "Bearer " + key,
 			},
 		};
 		if (method === "POST") {
