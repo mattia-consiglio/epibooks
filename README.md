@@ -1,8 +1,20 @@
-# React + Vite
+# Epibooks
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![JavaScript](https://img.shields.io/badge/-JavaScript-333?style=flat&logo=javascript)
+![TypeScript](https://img.shields.io/badge/-TypeScript-333?style=flat&logo=typescript)
+![React](https://img.shields.io/badge/-React-333?style=flat&logo=react)
+![Redux](https://img.shields.io/badge/-Redux-333?style=flat&logo=redux&logoColor=%23764ABC)
+![React Bootstrap](https://img.shields.io/badge/-React_Bootstrap-333?style=flat&logo=reactbootstrap)
 
-Currently, two official plugins are available:
+A digital library with revviews*, category filter, pagination, favourites.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+_*The API Token is expired, I planned to recreate the API provied_
+
+----
+
+Impletented some Unit and Integration testing with Vitest
+
+Deployed version: https://epibooks.vercel.app/
+
+
+This project is part of EPICODE bootcamp.
